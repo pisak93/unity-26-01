@@ -1,64 +1,57 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    public Rigidbody2D rb;
     public float velocidad;
+    public float direccion;
+    public bool saltando;
     public float fuerzaSalto;
-    public Vector2 direccion;
-    public PlayerInput playerInput;
     public bool isGrounded;
-    private int orientacion = 1;
 
     public Transform groundCheck;
     public float checkRadius;
     public LayerMask groundLayer;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+
+    public Rigidbody2D rb;
+
+
+    // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
-    void FixedUpdate()
-    {
-        float velocidadNueva = direccion.x * velocidad;
-        rb.linearVelocity = new Vector2(velocidadNueva, rb.linearVelocity.y);
-        transform.localScale = new Vector3(orientacion, 1, 1);
-    }
     // Update is called once per frame
     void Update()
     {
-        Flip();
-        CheckGrounded();
-    }
 
-    private void OnMove(InputValue value)
-    {
-        direccion = value.Get<Vector2>();
-    }
+    direccion = Input.GetAxis("Horizontal");
+    CheckGrounded();
 
-    private void OnJump(InputValue value)
-    {
-        if (value.isPressed && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
-        }
+    float velocidadNueva=direccion*velocidad;
 
-    }
-    public void Flip()
-    {
-        if (direccion.x > 0.1f)
-        {
-            orientacion = 1;
-        }
-        else if (direccion.x < -0.1f)
-        {
-            orientacion = -1;
-        }
-    }
-    public void CheckGrounded()
-    {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+
+     rb.velocity= new Vector2(velocidadNueva,rb.velocity.y);
+
+
+     saltando = Input.GetButtonDown("Jump");
+
+     if(saltando && isGrounded){
+
+     rb.velocity= new Vector2(rb.velocity.x,fuerzaSalto);
+
+     }
+
+     void CheckGrounded(){
+
+         isGrounded=Physics2D.OverlapCircle(groundCheck.position,checkRadius,groundLayer);
+
+     }
+
+
+
     }
 }
